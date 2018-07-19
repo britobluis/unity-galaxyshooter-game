@@ -9,8 +9,19 @@ public class Player : MonoBehaviour {
     //every variable has a NAME
     //optional value assigned
 
+    //laser object projectile
     [SerializeField]
-    private float speed = 10.0f;
+    private GameObject _laserPrefab;
+
+    //fire cooldown
+    [SerializeField]
+    private float _fireRate = 0.25f;
+
+    private float _canFire = 0.0f;
+
+
+    [SerializeField]
+    private float _speed = 10.0f;
 
 
 	// Use this for initialization
@@ -23,15 +34,22 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         movement();
+
+        //if space key is pressed
+        //spawn laser at player position
+        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            shoot();   
+        }
     }
 
     private void movement()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * speed * horizontalInput * Time.deltaTime);
+        transform.Translate(Vector3.right * _speed * horizontalInput * Time.deltaTime);
 
         float verticalInput = Input.GetAxis("Vertical");
-        transform.Translate(Vector3.up * speed * verticalInput * Time.deltaTime);
+        transform.Translate(Vector3.up * _speed * verticalInput * Time.deltaTime);
 
         if (transform.position.y > 0)
         {
@@ -50,5 +68,17 @@ public class Player : MonoBehaviour {
         {
             transform.position = new Vector3(9.4f, transform.position.y, 0);
         }
+    }
+
+    private void shoot()
+    {
+        if (Time.time > _canFire)
+            {
+                //spawns laser
+                Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.88f, 0), Quaternion.identity);
+
+                _canFire = Time.time + _fireRate;
+            }
+            
     }
 }
